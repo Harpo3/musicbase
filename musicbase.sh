@@ -104,7 +104,7 @@ else
     # add comma and space to end of ExportFormatHeaders string
     sed -in '/^ExportFormatHeaders/ s/$/, /' "$kid3confpath"
     # add count of 1 to existing value of ExportFormatIdx
-    exportformatidx=$((exportformatidx+1))
+    (( exportformatidx++ ))
     sed -i '/ExportFormatIdx.*/c\ExportFormatIdx='"$exportformatidx" "$kid3confpath"
     # add comma, space and value 'musicbase' to end of ExportFormatNames string
     sed -in '/^ExportFormatNames/ s/$/, musicbase/' "$kid3confpath"
