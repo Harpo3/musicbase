@@ -20,7 +20,6 @@ Time to complete varies by processor and can take >10 minutes for large librarie
 quality more quickly by testing on a subdirectory.
 
 EOF
-   printf '%s' "${usagetext}"
 }
 
 # Verify user provided required, valid path
