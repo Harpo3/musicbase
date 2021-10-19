@@ -1,22 +1,26 @@
 #!/bin/bash
 set -e
-# Help                                                     #
+# Help Function                                                    #
 ############################################################
 Help()
 {
    # Display Help
    printf  '\n'
-   printf  'Musicbase - A kid3-based music library database creation utility.\n'
-   printf  'syntax: musicbase.sh DIRPATH [-a] [-h] [-m MINDEPTH] [-o OUTPUTPATH] [q]\n\n'
-   printf  'Generate a music library database using music file tag data with formatting using Kid3-qt where DIRPATH is top of music library directory\n\n'
+   printf  'Musicbase - A kid3-based music library database creation utility.\n\n'
+   printf  'syntax: musicbase.sh DIRPATH [-h] [-m MINDEPTH] [-o FILE] [q]\n\n'
+   printf  'Generates a music library database using music file tag data and kid3-cli/Kid3-qt export tools.\n' 
+   printf 'Processes data from music files at the DIRPATH specified. File type is data separated values (DSV)\nwith carat (^) as the delimiter. Database records include the path to each music file.\n\n'
+   printf  'Time to complete varies by processor and can take >10 minutes for large libraries. Check\n'
+   printf 'output quality more quickly by testing on a subdirectory.\n\n'
    printf  'options:\n'
-   printf  ' -a use Archsimian-generated database (MediaMonkey)\n'
    printf  ' -h display this help file\n'
-   printf  ' -m minimum subdirectory depth from top directory of music library to music files (default: 2)\n'
-   printf  ' -o specify output file name and path. Default is %s\n' "$HOME/.musiclib.dsv"
+   printf  ' -m minimum subdirectory depth from top directory of music library to music files (default: 1)\n'
+   printf  ' -o specify output file name and path (default: %s)\n' "\$HOME/.musiclib.dsv"
    printf  ' -q quiet - hide terminal output\n'
    printf  '\n'
 }
+
+# Verify user provided required, valid path
 if [ -z "$1" ]
   then
     printf  '\nMissing required argument: path to music directory.\n'
@@ -35,15 +39,15 @@ else
     printf '%s\n' "$1"    
     exit 1
 fi
-archsimiandb=0
-dirdepth=2
+
+# Set default variables
+dirdepth=1
 outpath="$HOME/.musiclib.dsv"
 showdisplay=1
-while getopts ":ahm:o:q" opt; do
+
+# Use getops to set any user-assigned options
+while getopts ":hm:o:q" opt; do
   case $opt in
-    a)
-      archsimiandb=1 >&2
-      ;;
     h) # display Help
       Help
       exit;;
@@ -67,8 +71,8 @@ while getopts ":ahm:o:q" opt; do
       ;;
   esac
 done
-# Get list of music subdirectories containing music files, using first variable $0 for library folder, e.g. /mnt/vboxfiles/music
 
+# Get list of music subdirectories, using first variable $0 for library folder, e.g. /mnt/vboxfiles/music
 find "$libpath" -mindepth "$dirdepth" -type d > "$HOME"/.albumdirs;
 if [ $showdisplay == 0 ] 
 then
@@ -77,11 +81,9 @@ else
     printf 'Locating all subdirectories under this path...\n'
 fi
 
-# Add code to verify kid3-qt 'musicbase' export format exists in $HOME/.config/Kid3/Kid3.conf
+# Verify kid3-qt 'musicbase' export format exists-> $HOME/.config/Kid3/Kid3.conf
 # If exists is false, add export format to $HOME/.config/Kid3/Kid3.conf; otherwise skip and proceed
 kid3confpath=$"$HOME/.config/Kid3/Kid3.conf"
-
-# Check for existing musicbase export format in kid3-qt configration file, and create if missing
 if grep -q "musicbase" "$kid3confpath"
 then 
     if grep -q "%{catalognumber}^%{artist}^%{grouping}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}^^%{songs-db_custom2}^%{work}" "$kid3confpath"
@@ -111,14 +113,14 @@ else
     # add comma and space to the end of ExportFormatTrailers string
     sed -in '/^ExportFormatTrailers/ s/$/, /' "$kid3confpath"
 fi
-# Start database creation
+
+# Build music library database
 if [ $showdisplay == 0 ] 
 then
      printf 'Building database. This can take time for kid3-cli to process, especially for large music libraries...\n' > /dev/null 2>&1
 else 
     printf 'Building database. This can take time for kid3-cli to process, especially for large music libraries...\n'
 fi
-
 # This is for the spinner, to show the program is working
 if [ $showdisplay == 1 ]
 then
@@ -130,7 +132,6 @@ else
 fi
 # Add header to the database file
 echo  "ID^Artist^IDAlbum^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating^LastTimePlayed^Custom2^GroupDesc" > "$outpath"
-
 # Loop through the albumdirs file using kid3-cli to read the tag info and add it to the database file, 
 # while running the spinner to show operation
 while IFS= read -r line; do   
@@ -140,11 +141,11 @@ while IFS= read -r line; do
     then
         printf '' > /dev/null 2>&1
     else 
-        printf "\b${sp:i++%${#sp}:1}"
+        printf '\b%s' "${sp:i++%${#sp}:1}"
     fi
 done < "$HOME"/.albumdirs
 
-# Sort library using file path column, preserving position of header, and replace library file
+# Sort library order using file path column, preserving position of header, and replace library file
 (head -n 1 "$outpath" && tail -n +2 "$outpath"  | sort -k7 -t '^') > /tmp/musiclib.dsv
 cp /tmp/musiclib.dsv "$outpath"
 if [ $showdisplay == 0 ] 
