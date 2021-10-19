@@ -86,9 +86,10 @@ fi
 # Verify kid3-qt 'musicbase' export format exists-> $HOME/.config/Kid3/Kid3.conf
 # If exists is false, add export format to $HOME/.config/Kid3/Kid3.conf; otherwise skip and proceed
 kid3confpath=$"$HOME/.config/Kid3/Kid3.conf"
+exportcodes="%{catalognumber}^%{artist}^%{grouping}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}^^%{songs-db_custom2}^%{work}"
 if grep -q "musicbase" "$kid3confpath"
 then 
-    if grep -q "%{catalognumber}^%{artist}^%{grouping}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}^^%{songs-db_custom2}^%{work}" "$kid3confpath"
+    if grep -q "$exportcodes" "$kid3confpath"
     then
         printf ''
     else
