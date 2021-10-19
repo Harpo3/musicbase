@@ -1,30 +1,35 @@
 #!/bin/bash
 set -e
-# Help Function                                                    #
-############################################################
-Help()
-{
-   # Display Help
-   printf  '\n'
-   printf  'Musicbase - A kid3-based music library database creation utility.\n\n'
-   printf  'syntax: musicbase.sh DIRPATH [-h] [-m MINDEPTH] [-o FILE] [q]\n\n'
-   printf  'Generates a music library database using music file tag data and kid3-cli/kid3-qt export tools.\n' 
-   printf 'Processes data from music files at the DIRPATH specified. File type is data separated values (DSV)\nwith carat (^) as the delimiter. Database records include the path to each music file.\n\n'
-   printf  'Time to complete varies by processor and can take >10 minutes for large libraries. Check\n'
-   printf 'output quality more quickly by testing on a subdirectory.\n\n'
-   printf  'options:\n'
-   printf  ' -h display this help file\n'
-   printf  ' -m minimum subdirectory depth from top directory of music library to music files (default: 1)\n'
-   printf  ' -o specify output file name and path (default: %s)\n' "\$HOME/.musiclib.dsv"
-   printf  ' -q quiet - hide terminal output\n'
-   printf  '\n'
+app_this="${0##*/}"
+print_help(){
+    local usagetext
+    IFS='' read -r -d '' usagetext <<EOF || true
+A kid3-based utility to build a complete music library database. Requires both kid3-cli and kid3-qt.
+
+Usage: ${app_this} DIRPATH [option]
+
+options:
+-h display this help file
+-m minimum subdirectory depth from top directory of music library to music files (default: 1)
+-o specify output file name and path (default: $HOME/.musiclib.dsv)
+-q quiet - hide terminal output
+
+Generates a music library database using music file tag data with kid3-cli/kid3-qt export tools.
+Processes data from music files at the DIRPATH specified. Filetype is data separated values (DSV)
+with carat (^) as the delimiter. Database records include the path to each music file.
+
+Time to complete varies by processor and can take >10 minutes for large libraries. Check output 
+quality more quickly by testing on a subdirectory.
+
+EOF
+   printf '%s' "${usagetext}"
 }
 
 # Verify user provided required, valid path
 if [ -z "$1" ]
   then
     printf  '\nMissing required argument: path to music directory.\n'
-    Help
+    print_help
     exit 1
 fi
 if [ -d  "$1" ]; then
@@ -32,7 +37,7 @@ if [ -d  "$1" ]; then
     shift
 else
     if [ "$1" == "-h" ]; then
-        Help
+        print_help
         exit 1
     fi
     printf 'This directory does not exist: '
@@ -49,7 +54,7 @@ showdisplay=1
 while getopts ":hm:o:q" opt; do
   case $opt in
     h) # display Help
-      Help
+      print_help
       exit;;
     m)
       dirdepth=$OPTARG
