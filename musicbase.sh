@@ -8,7 +8,7 @@ Help()
    printf  '\n'
    printf  'Musicbase - A kid3-based music library database creation utility.\n\n'
    printf  'syntax: musicbase.sh DIRPATH [-h] [-m MINDEPTH] [-o FILE] [q]\n\n'
-   printf  'Generates a music library database using music file tag data and kid3-cli/Kid3-qt export tools.\n' 
+   printf  'Generates a music library database using music file tag data and kid3-cli/kid3-qt export tools.\n' 
    printf 'Processes data from music files at the DIRPATH specified. File type is data separated values (DSV)\nwith carat (^) as the delimiter. Database records include the path to each music file.\n\n'
    printf  'Time to complete varies by processor and can take >10 minutes for large libraries. Check\n'
    printf 'output quality more quickly by testing on a subdirectory.\n\n'
@@ -73,7 +73,7 @@ while getopts ":hm:o:q" opt; do
 done
 
 # Get list of music subdirectories, using first variable $libpath for library folder, e.g. /mnt/vboxfiles/music
-find "$libpath" -mindepth "$dirdepth" -type d > "$HOME"/.albumdirs;
+find "$libpath" -mindepth "$dirdepth" -type d > /tmp/albumdirs;
 if [ $showdisplay == 0 ] 
 then
      printf 'Locating all subdirectories under this path...\n' > /dev/null 2>&1
@@ -143,7 +143,7 @@ while IFS= read -r line; do
     else 
         printf '\b%s' "${sp:i++%${#sp}:1}"
     fi
-done < "$HOME"/.albumdirs
+done < /tmp/albumdirs
 
 # Sort library order using file path column, preserving position of header, and replace library file
 (head -n 1 "$outpath" && tail -n +2 "$outpath"  | sort -k7 -t '^') > /tmp/musiclib.dsv
