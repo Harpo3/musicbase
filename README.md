@@ -20,6 +20,6 @@ options:
 
 -m minimum subdirectory depth from top directory of music library to music files (default: 1)
 
--o specify output file name and path (default: %s) "\$HOME/.musiclib.dsv"
+-o specify output file name and path (default: \$HOME/.musiclib.dsv)
 
 -q quiet - hide terminal output
