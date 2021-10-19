@@ -28,7 +28,7 @@ EOF
 # Verify user provided required, valid path
 if [ -z "$1" ]
   then
-    printf  '\nMissing required argument: path to music directory.\n'
+    printf  '%s\n' "Missing required argument: path to music directory."
     print_help
     exit 1
 fi
@@ -67,11 +67,11 @@ while getopts ":hm:o:q" opt; do
       showdisplay=0 >&2
       ;;
     \?)
-      printf 'Invalid option: -%s\n' "$OPTARG"
+      printf 'Invalid option: -%s' "$OPTARG\n"
       exit 1
       ;;
     :)
-      printf 'Option -%s requires an argument.\n' "$OPTARG"
+      printf 'Option requires an argument: %s' "$OPTARG\n"
       exit 1
       ;;
   esac
@@ -81,9 +81,9 @@ done
 find "$libpath" -mindepth "$dirdepth" -type d > /tmp/albumdirs;
 if [ $showdisplay == 0 ] 
 then
-     printf 'Locating all subdirectories under this path...\n' > /dev/null 2>&1
+     printf '%s\n' "Locating all subdirectories under this path..." > /dev/null 2>&1
 else 
-    printf 'Locating all subdirectories under this path...\n'
+    printf '%s\n' "Locating all subdirectories under this path..."
 fi
 
 # Verify kid3-qt 'musicbase' export format exists-> $HOME/.config/Kid3/Kid3.conf
@@ -95,15 +95,15 @@ then
     then
         printf ''
     else
-       printf 'A kid3-qt export format was found with the musicbase name, but its format is not a match. Delete this format in kid3-qt, then run musicbase again.\n'
+       printf '%s\n' "A kid3-qt export format was found with the musicbase name, but its format is not a match. Delete this format in kid3-qt, then run musicbase again."
        exit               
     fi
 else
     if [ $showdisplay == 0 ] 
     then
-        printf 'Adding the musicbase export format to kid3-qt configuration.\n' > /dev/null 2>&1
+        printf '%s\n' "Adding the musicbase export format to kid3-qt configuration." > /dev/null 2>&1
     else 
-        printf 'Adding the musicbase export format to kid3-qt configuration.\n'
+        printf '%s\n' "Adding the musicbase export format to kid3-qt configuration."
     fi
     exportformatidx="$(grep -oP '(?<=ExportFormatIdx=)[0-9]+' "$kid3confpath")"
     # add comma and space to end of ExportFormatHeaders string
@@ -122,9 +122,9 @@ fi
 # Build music library database
 if [ $showdisplay == 0 ] 
 then
-     printf 'Building database. This can take time for kid3-cli to process, especially for large music libraries...\n' > /dev/null 2>&1
+     printf '%s\n' "Building database. This can take time for kid3-cli to process, especially for large music libraries..." > /dev/null 2>&1
 else 
-    printf 'Building database. This can take time for kid3-cli to process, especially for large music libraries...\n'
+    printf '%s\n' "Building database. This can take time for kid3-cli to process, especially for large music libraries..."
 fi
 # This is for the spinner, to show the program is working
 if [ $showdisplay == 1 ]
@@ -155,8 +155,8 @@ done < /tmp/albumdirs
 cp /tmp/musiclib.dsv "$outpath"
 if [ $showdisplay == 0 ] 
 then
-     printf 'Finished! Output: %s\n\n' > /dev/null 2>&1"$outpath"
+     printf '%s\n' "Finished! Output: $outpath" > /dev/null 2>&1
 else 
-    printf 'Finished! Output: %s\n\n' "$outpath"
+    printf '%s\n' "Finished! Output: $outpath"
 fi
 #EOF
