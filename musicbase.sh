@@ -1,12 +1,10 @@
 #!/bin/bash
 set -e
-app_this="${0##*/}"
 print_help(){
-    local usagetext
-    IFS='' read -r -d '' usagetext <<EOF || true
+cat << 'EOF'
 A kid3-based utility to build a complete music library database. Requires both kid3-cli and kid3-qt.
 
-Usage: ${app_this} DIRPATH [option]
+Usage: musicbase.sh DIRPATH [option]
 
 options:
 -h display this help file
