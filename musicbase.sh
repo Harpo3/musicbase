@@ -72,7 +72,7 @@ while getopts ":hm:o:q" opt; do
   esac
 done
 
-# Get list of music subdirectories, using first variable $0 for library folder, e.g. /mnt/vboxfiles/music
+# Get list of music subdirectories, using first variable $libpath for library folder, e.g. /mnt/vboxfiles/music
 find "$libpath" -mindepth "$dirdepth" -type d > "$HOME"/.albumdirs;
 if [ $showdisplay == 0 ] 
 then
