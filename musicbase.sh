@@ -55,7 +55,7 @@ while getopts ":hm:o:q" opt; do
   case $opt in
     h) # display Help
       print_help
-      exit;;
+      exit 0;;
     m)
       dirdepth=$OPTARG
       shift
