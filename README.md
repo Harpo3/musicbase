@@ -9,7 +9,7 @@ Requires both kid3-cli and kid3-qt.
 syntax: musicbase.sh DIRPATH [-h] [-m MINDEPTH] [-o FILE] [q]
 
 Generates a music library database using music file tag data and kid3-cli/Kid3-qt export tools.
-Processes data from music files at the DIRPATH specified. File type is data separated values (DSV)\nwith carat (^) as the delimiter. Database records include the path to each music file.
+Processes data from music files at the DIRPATH specified. File type is data separated values (DSV) with carat (^) as the delimiter. Database records include the path to each music file.
 
 Time to complete varies by processor and can take >10 minutes for large libraries. Check
 output quality more quickly by testing on a subdirectory.
