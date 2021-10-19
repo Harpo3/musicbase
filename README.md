@@ -15,7 +15,11 @@ Time to complete varies by processor and can take >10 minutes for large librarie
 output quality more quickly by testing on a subdirectory.
 
 options:
+
 -h display this help file 
+
 -m minimum subdirectory depth from top directory of music library to music files (default: 1)
+
 -o specify output file name and path (default: %s) "\$HOME/.musiclib.dsv"
+
 -q quiet - hide terminal output
