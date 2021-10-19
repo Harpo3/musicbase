@@ -16,6 +16,6 @@ output quality more quickly by testing on a subdirectory.
 
 options:
  -h display this help file\n'
- -m minimum subdirectory depth from top directory of music library to music files (default: 1)\n'
- -o specify output file name and path (default: %s)\n' "\$HOME/.musiclib.dsv"
- -q quiet - hide terminal output\n'
+ -m minimum subdirectory depth from top directory of music library to music files (default: 1)
+ -o specify output file name and path (default: %s) "\$HOME/.musiclib.dsv"
+ -q quiet - hide terminal output
