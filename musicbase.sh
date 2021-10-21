@@ -68,6 +68,7 @@ outpath="$HOME/.musiclib.dsv"
 showdisplay=1
 inclheader=1
 defheader="ID^Artist^IDAlbum^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating^LastTimePlayed^Custom2^GroupDesc"
+exportcodes="%{catalognumber}^%{artist}^%{grouping}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}^^%{songs-db_custom2}^%{work}"
 
 # Use getops to set any user-assigned options
 while getopts ":hm:o:q" opt; do
@@ -114,7 +115,6 @@ fi
 # Verify kid3-qt 'musicbase' export format exists-> $HOME/.config/Kid3/Kid3.conf
 # If exists is false, add export format to $HOME/.config/Kid3/Kid3.conf; otherwise skip and proceed
 kid3confpath=$"$HOME/.config/Kid3/Kid3.conf"
-exportcodes="%{catalognumber}^%{artist}^%{grouping}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}^^%{songs-db_custom2}^%{work}"
 if grep -q "musicbase" "$kid3confpath"
 then 
     if grep -q "$exportcodes" "$kid3confpath"
@@ -140,7 +140,7 @@ else
     # add comma, space and value 'musicbase' to end of ExportFormatNames string
     sed -in '/^ExportFormatNames/ s/$/, musicbase/' "$kid3confpath"
     # add comma, space and format string to end of ExportFormatTracks string
-    sed -in '/^ExportFormatTracks/ s/$/, %{catalognumber}^%{artist}^%{grouping}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}^^%{songs-db_custom2}^%{work}/' "$kid3confpath"
+    sed -in '/^ExportFormatTracks/ s/$/, '"$exportcodes"'/' "$kid3confpath"
     # add comma and space to the end of ExportFormatTrailers string
     sed -in '/^ExportFormatTrailers/ s/$/, /' "$kid3confpath"
 fi
@@ -169,7 +169,7 @@ fi
 # Loop through the albumdirs file using kid3-cli to read the tag info and add it to the database file, 
 # while running the spinner to show operation
 while IFS= read -r line; do   
-    kid3-cli -c "export /tmp/musiclib.dsv musicbase '%{catalognumber}^%{artist}^%{grouping}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}^^%{songs-db_custom2}^%{work}'" "$line"
+    kid3-cli -c "export /tmp/musiclib.dsv musicbase "$exportcodes"" "$line"
     cat /tmp/musiclib.dsv >> "$outpath"
     if [ $showdisplay == 0 ] 
     then
