@@ -22,6 +22,25 @@ quality more quickly by testing on a subdirectory.
 EOF
 }
 
+kid3qtrunning(){
+# Determine whether kid3-qt is running, prompt user to close and continue processing
+local kidrunning="$(ps aux | grep "kid3-qt" | grep -v "grep")"
+if ! [ -z "$kidrunning" ]
+then
+    # prompt user to kill kid3-qt or exit program
+    echo -n "Kid3-qt cannot be running for this utility to work. Close kid3-qt now ([Y]/n)?"
+    read -r proceed
+    if [ "$proceed" == "${proceed#[Yn]}" ] 
+    then
+        local PID="$(pidof kid3-qt)"
+        kill -s HUP $PID
+    else
+        printf 'Goodbye, then.\n'
+        exit 0
+    fi
+fi
+}
+
 # Verify user provided required, valid path
 if [ -z "$1" ]
   then
@@ -73,6 +92,9 @@ while getopts ":hm:o:q" opt; do
       ;;
   esac
 done
+
+# Verify kid3-qt is not running
+kid3qtrunning
 
 # Get list of music subdirectories, using first variable $libpath for library folder, e.g. /mnt/vboxfiles/music
 find "$libpath" -mindepth "$dirdepth" -type d > /tmp/albumdirs;
