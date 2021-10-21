@@ -9,6 +9,7 @@ Usage: musicbase.sh DIRPATH [option]
 options:
 -h display this help file
 -m minimum subdirectory depth from top directory of music library to music files (default: 1)
+-n no database header
 -o specify output file name and path (default: $HOME/.musiclib.dsv)
 -q quiet - hide terminal output
 
@@ -65,6 +66,8 @@ fi
 dirdepth=1
 outpath="$HOME/.musiclib.dsv"
 showdisplay=1
+inclheader=1
+defheader="ID^Artist^IDAlbum^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating^LastTimePlayed^Custom2^GroupDesc"
 
 # Use getops to set any user-assigned options
 while getopts ":hm:o:q" opt; do
@@ -75,6 +78,9 @@ while getopts ":hm:o:q" opt; do
     m)
       dirdepth=$OPTARG
       shift
+      ;;
+    n)
+      inclheader=0 >&2
       ;;
     o)
       outpath=$OPTARG      
@@ -156,7 +162,10 @@ else
     printf ''
 fi
 # Add header to the database file
-echo  "ID^Artist^IDAlbum^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating^LastTimePlayed^Custom2^GroupDesc" > "$outpath"
+if [ $inclheader == 1 ]
+then
+    echo  "$defheader" > "$outpath"
+fi
 # Loop through the albumdirs file using kid3-cli to read the tag info and add it to the database file, 
 # while running the spinner to show operation
 while IFS= read -r line; do   
@@ -171,7 +180,12 @@ while IFS= read -r line; do
 done < /tmp/albumdirs
 
 # Sort library order using file path column, preserving position of header, and replace library file
-(head -n 1 "$outpath" && tail -n +2 "$outpath"  | sort -k7 -t '^') > /tmp/musiclib.dsv
+if [ $inclheader == 1 ]
+then
+    (head -n 1 "$outpath" && tail -n +2 "$outpath"  | sort -k7 -t '^') > /tmp/musiclib.dsv
+else # do not preserve header, not used
+    (tail -n +2 "$outpath"  | sort -k7 -t '^') > /tmp/musiclib.dsv
+fi
 cp /tmp/musiclib.dsv "$outpath"
 if [ $showdisplay == 0 ] 
 then
