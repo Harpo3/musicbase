@@ -71,7 +71,7 @@ defheader="ID^Artist^IDAlbum^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLeng
 exportcodes="%{catalognumber}^%{artist}^%{grouping}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}^^%{songs-db_custom2}^%{work}"
 
 # Use getops to set any user-assigned options
-while getopts ":hm:o:q" opt; do
+while getopts ":hm:no:q" opt; do
   case $opt in
     h) # display Help
       print_help
@@ -165,6 +165,8 @@ fi
 if [ $inclheader == 1 ]
 then
     echo  "$defheader" > "$outpath"
+else
+    rm "$outpath"
 fi
 # Loop through the albumdirs file using kid3-cli to read the tag info and add it to the database file, 
 # while running the spinner to show operation
@@ -193,4 +195,5 @@ then
 else 
     printf '%s\n' "Finished! Output: $outpath"
 fi
+rm /tmp/musiclib.dsv
 #EOF
