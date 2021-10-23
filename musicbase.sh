@@ -42,6 +42,21 @@ then
 fi
 }
 
+addformat(){
+    local exportformatidx="$(grep -oP '(?<=ExportFormatIdx=)[0-9]+' "$kid3confpath")"
+    # add comma and space to end of ExportFormatHeaders string
+    sed -in '/^ExportFormatHeaders/ s/$/, /' "$kid3confpath"
+    # add count of 1 to existing value of ExportFormatIdx
+    (( exportformatidx++ ))
+    sed -i '/ExportFormatIdx.*/c\ExportFormatIdx='"$exportformatidx" "$kid3confpath"
+    # add comma, space and value 'musicbase' to end of ExportFormatNames string
+    sed -in '/^ExportFormatNames/ s/$/, musicbase/' "$kid3confpath"
+    # add comma, space and format string to end of ExportFormatTracks string
+    sed -in '/^ExportFormatTracks/ s/$/, '"$exportcodes"'/' "$kid3confpath"
+    # add comma and space to the end of ExportFormatTrailers string
+    sed -in '/^ExportFormatTrailers/ s/$/, /' "$kid3confpath"
+}
+
 # Verify user provided required, valid path
 if [ -z "$1" ]
   then
@@ -131,18 +146,7 @@ else
     else 
         printf '%s\n' "Adding the musicbase export format to kid3-qt configuration."
     fi
-    exportformatidx="$(grep -oP '(?<=ExportFormatIdx=)[0-9]+' "$kid3confpath")"
-    # add comma and space to end of ExportFormatHeaders string
-    sed -in '/^ExportFormatHeaders/ s/$/, /' "$kid3confpath"
-    # add count of 1 to existing value of ExportFormatIdx
-    (( exportformatidx++ ))
-    sed -i '/ExportFormatIdx.*/c\ExportFormatIdx='"$exportformatidx" "$kid3confpath"
-    # add comma, space and value 'musicbase' to end of ExportFormatNames string
-    sed -in '/^ExportFormatNames/ s/$/, musicbase/' "$kid3confpath"
-    # add comma, space and format string to end of ExportFormatTracks string
-    sed -in '/^ExportFormatTracks/ s/$/, '"$exportcodes"'/' "$kid3confpath"
-    # add comma and space to the end of ExportFormatTrailers string
-    sed -in '/^ExportFormatTrailers/ s/$/, /' "$kid3confpath"
+    addformat
 fi
 
 # Build music library database
