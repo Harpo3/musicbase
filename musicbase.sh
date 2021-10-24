@@ -108,8 +108,7 @@ while getopts ":hk:l:m:no:qs:" opt; do
       showdisplay=0 >&2
       ;;
     s)
-      sortcolumn=$OPTARG
-      printf 'sortcolumn: %s\n' "$sortcolumn"      
+      sortcolumn=$OPTARG     
       ;;
     \?)
       printf 'Invalid option: -%s\n' "$OPTARG"
