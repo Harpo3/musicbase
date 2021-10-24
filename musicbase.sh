@@ -96,6 +96,7 @@ while getopts ":hk:l:m:no:qs:" opt; do
       ;;
     m)
       dirdepth=$OPTARG
+      shift
       ;;
     n)
       inclheader=0 >&2
