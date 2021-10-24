@@ -42,21 +42,6 @@ then
 fi
 }
 
-addformat(){
-    local exportformatidx="$(grep -oP '(?<=ExportFormatIdx=)[0-9]+' "$kid3confpath")"
-    # add comma and space to end of ExportFormatHeaders string
-    sed -in '/^ExportFormatHeaders/ s/$/, /' "$kid3confpath"
-    # add count of 1 to existing value of ExportFormatIdx
-    (( exportformatidx++ ))
-    sed -i '/ExportFormatIdx.*/c\ExportFormatIdx='"$exportformatidx" "$kid3confpath"
-    # add comma, space and value 'musicbase' to end of ExportFormatNames string
-    sed -in '/^ExportFormatNames/ s/$/, musicbase/' "$kid3confpath"
-    # add comma, space and format string to end of ExportFormatTracks string
-    sed -in '/^ExportFormatTracks/ s/$/, '"$exportcodes"'/' "$kid3confpath"
-    # add comma and space to the end of ExportFormatTrailers string
-    sed -in '/^ExportFormatTrailers/ s/$/, /' "$kid3confpath"
-}
-
 # Verify user provided required, valid path
 if [ -z "$1" ]
   then
@@ -78,6 +63,7 @@ else
 fi
 
 # Set default variables
+kid3confpath=$"$HOME/.config/Kid3/Kid3.conf"
 dirdepth=1
 outpath="$HOME/.musiclib.dsv"
 showdisplay=1
@@ -127,27 +113,22 @@ else
     printf '%s\n' "Locating all subdirectories under this path..."
 fi
 
-# Verify kid3-qt 'musicbase' export format exists-> $HOME/.config/Kid3/Kid3.conf
-# If exists is false, add export format to $HOME/.config/Kid3/Kid3.conf; otherwise skip and proceed
-kid3confpath=$"$HOME/.config/Kid3/Kid3.conf"
-if grep -q "musicbase" "$kid3confpath"
-then 
-    if grep -q "$exportcodes" "$kid3confpath"
-    then
-        printf ''
-    else
-       printf '%s\n' "A kid3-qt export format was found with the musicbase name, but its format is not a match. Delete this format in kid3-qt, then run musicbase again."
-       exit               
-    fi
-else
-    if [ $showdisplay == 0 ] 
-    then
-        printf '%s\n' "Adding the musicbase export format to kid3-qt configuration." > /dev/null 2>&1
-    else 
-        printf '%s\n' "Adding the musicbase export format to kid3-qt configuration."
-    fi
-    addformat
-fi
+# Backup kid3-qt config-> $HOME/.config/Kid3/Kid3.conf to /tmp
+cp $HOME/.config/Kid3/Kid3.conf /tmp
+
+# Add musicbase export format to $HOME/.config/Kid3/Kid3.conf
+exportformatidx="$(grep -oP '(?<=ExportFormatIdx=)[0-9]+' "$kid3confpath")"
+# add comma and space to end of ExportFormatHeaders string
+sed -in '/^ExportFormatHeaders/ s/$/, /' "$kid3confpath"
+# add count of 1 to existing value of ExportFormatIdx
+(( exportformatidx++ ))
+sed -i '/ExportFormatIdx.*/c\ExportFormatIdx='"$exportformatidx" "$kid3confpath"
+# add comma, space and value 'musicbase' to end of ExportFormatNames string
+sed -in '/^ExportFormatNames/ s/$/, musicbase/' "$kid3confpath"
+# add comma, space and format string to end of ExportFormatTracks string
+sed -in '/^ExportFormatTracks/ s/$/, '"$exportcodes"'/' "$kid3confpath"
+# add comma and space to the end of ExportFormatTrailers string
+sed -in '/^ExportFormatTrailers/ s/$/, /' "$kid3confpath"
 
 # Build music library database
 if [ $showdisplay == 0 ] 
@@ -200,4 +181,8 @@ else
     printf '%s\n' "Finished! Output: $outpath"
 fi
 rm /tmp/musiclib.dsv
+# Replace $HOME/.config/Kid3/Kid3.conf with backed up tmp copy
+rm $HOME/.config/Kid3/Kid3.conf
+cp /tmp/Kid3.conf $HOME/.config/Kid3
+rm $HOME/.config/Kid3/Kid3.confn
 #EOF
