@@ -2,20 +2,29 @@
 set -e
 print_help(){
 cat << 'EOF'
+
 A kid3-based utility to build a complete music library database. Requires both kid3-cli and kid3-qt.
 
 Usage: musicbase.sh DIRPATH [option]
 
 options:
 -h display this help file
+-k user-defined header string with delimiters
+-l user-defined format codes with delimiters
 -m minimum subdirectory depth from top directory of music library to music files (default: 1)
 -n no database header
 -o specify output file name and path (default: $HOME/.musiclib.dsv)
 -q quiet - hide terminal output
 
 Generates a music library database using music file tag data with kid3-cli/kid3-qt export tools.
-Processes data from music files at the DIRPATH specified. Filetype is data separated values (DSV)
-with carat (^) as the delimiter. Database records include the path to each music file.
+Processes data from music files at the DIRPATH specified. Default output filetype is data separated 
+values (DSV) with carat (^) as the delimiter. Database records include the path to each music file.
+
+Default header and format codes can be overridden using -k and -l options. 
+
+Defaults:
+"Artist^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating"
+"%{artist}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}"
 
 Time to complete varies by processor and can take >10 minutes for large libraries. Check output 
 quality more quickly by testing on a subdirectory.
@@ -68,15 +77,22 @@ dirdepth=1
 outpath="$HOME/.musiclib.dsv"
 showdisplay=1
 inclheader=1
-defheader="ID^Artist^IDAlbum^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating^LastTimePlayed^Custom2^GroupDesc"
-exportcodes="%{catalognumber}^%{artist}^%{grouping}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}^^%{songs-db_custom2}^%{work}"
+defheader="Artist^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating"
+exportcodes="%{artist}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}"
 
 # Use getops to set any user-assigned options
-while getopts ":hm:no:q" opt; do
+while getopts ":hk:l:m:no:q" opt; do
   case $opt in
     h) # display Help
       print_help
       exit 0;;
+    k)
+      defheader=$OPTARG            
+      ;;
+    l)
+      exportcodes=$OPTARG      
+      shift
+      ;;
     m)
       dirdepth=$OPTARG
       shift
@@ -184,5 +200,4 @@ rm /tmp/musiclib.dsv
 # Replace $HOME/.config/Kid3/Kid3.conf with backed up tmp copy
 rm $HOME/.config/Kid3/Kid3.conf
 cp /tmp/Kid3.conf $HOME/.config/Kid3
-rm $HOME/.config/Kid3/Kid3.confn
 #EOF
