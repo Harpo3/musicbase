@@ -7,6 +7,7 @@ The script uses the kid3-qt configuration file ($HOME/.config/Kid3/Kid3.conf) to
 Usage: musicbase.sh DIRPATH [option]
 
 options:
+
 -h display this help file
 
 -k user-defined header string with delimiters
