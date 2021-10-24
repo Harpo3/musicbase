@@ -8,12 +8,19 @@ Usage: musicbase.sh DIRPATH [option]
 
 options:
 -h display this help file
+
 -k user-defined header string with delimiters
+
 -l user-defined format codes with delimiters
+
 -m minimum subdirectory depth from top directory of music library to music files (default: 1)
+
 -n no database header
+
 -o specify output file name and path (default: $HOME/.musiclib.dsv)
+
 -q quiet - hide terminal output
+
 -s sort database output by specified column number
 
 Generates a music library database using music file tag data with kid3-cli/kid3-qt export tools.
