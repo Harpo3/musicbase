@@ -15,6 +15,7 @@ options:
 -n no database header
 -o specify output file name and path (default: $HOME/.musiclib.dsv)
 -q quiet - hide terminal output
+-s sort database output by specified column number
 
 Generates a music library database using music file tag data with kid3-cli/kid3-qt export tools.
 Processes data from music files at the DIRPATH specified. Default output filetype is data separated 
@@ -79,9 +80,10 @@ showdisplay=1
 inclheader=1
 defheader="Artist^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating"
 exportcodes="%{artist}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}"
+sortcolumn=""
 
 # Use getops to set any user-assigned options
-while getopts ":hk:l:m:no:q" opt; do
+while getopts ":hk:l:m:no:qs:" opt; do
   case $opt in
     h) # display Help
       print_help
@@ -91,11 +93,9 @@ while getopts ":hk:l:m:no:q" opt; do
       ;;
     l)
       exportcodes=$OPTARG      
-      shift
       ;;
     m)
       dirdepth=$OPTARG
-      shift
       ;;
     n)
       inclheader=0 >&2
@@ -107,15 +107,17 @@ while getopts ":hk:l:m:no:q" opt; do
       showdisplay=0 >&2
       ;;
     \?)
-      printf 'Invalid option: -%s' "$OPTARG\n"
+      printf 'Invalid option: -%s\n' "$OPTARG"
       exit 1
       ;;
     :)
-      printf 'Option requires an argument: %s' "$OPTARG\n"
+      printf 'Option requires an argument: %s\n' "$OPTARG"
       exit 1
       ;;
   esac
 done
+
+shift $((OPTIND-1))
 
 # Verify kid3-qt is not running
 kid3qtrunning
@@ -183,11 +185,23 @@ while IFS= read -r line; do
 done < /tmp/albumdirs
 
 # Sort library order using file path column, preserving position of header, and replace library file
-if [ $inclheader == 1 ]
+# First, check whether a sort order is specified, then whether a header is specified.
+
+if [ ! -z "${sortcolumn}" ] 
 then
-    (head -n 1 "$outpath" && tail -n +2 "$outpath"  | sort -k7 -t '^') > /tmp/musiclib.dsv
-else # do not preserve header, not used
-    (tail -n +2 "$outpath"  | sort -k7 -t '^') > /tmp/musiclib.dsv
+    if [ $inclheader == 1 ]
+    then
+        (head -n 1 "$outpath" && tail -n +2 "$outpath"  | sort -k$sortcolumn -t '^') > /tmp/musiclib.dsv
+    else # do not preserve header, not used
+        (tail -n +2 "$outpath"  | sort -k$sortcolumn -t '^') > /tmp/musiclib.dsv
+    fi
+else
+    if [ $inclheader == 1 ]
+    then
+        (head -n 1 "$outpath" && tail -n +2 "$outpath") > /tmp/musiclib.dsv
+    else # do not preserve header, not used
+        (tail -n +2 "$outpath") > /tmp/musiclib.dsv
+    fi
 fi
 cp /tmp/musiclib.dsv "$outpath"
 if [ $showdisplay == 0 ] 
