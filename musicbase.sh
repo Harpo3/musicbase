@@ -87,8 +87,7 @@ while getopts ":hk:l:m:no:q" opt; do
       print_help
       exit 0;;
     k)
-      defheader=$OPTARG
-      shift
+      defheader=$OPTARG      
       ;;
     l)
       exportcodes=$OPTARG      
