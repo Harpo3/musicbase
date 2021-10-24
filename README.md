@@ -31,7 +31,9 @@ values (DSV) with carat (^) as the delimiter. Database records include the path 
 Default header and format codes can be overridden using -k and -l options. 
 
 Defaults:
+
 "Artist^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating"
+
 "%{artist}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}"
 
 Time to complete varies by processor and can take >10 minutes for large libraries. Check output 
