@@ -3,7 +3,7 @@ set -e
 print_help(){
 cat << 'EOF'
 
-A kid3-based utility to build a complete music library database. Requires both kid3-cli and kid3-qt.
+A kid3-based utility to build a complete music library database. Requires kid3-qt. The non-qt version of kid3 does not work with this, AFAIK.
 
 Usage: musicbase.sh DIRPATH [option]
 
