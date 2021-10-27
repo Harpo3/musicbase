@@ -25,7 +25,7 @@ Default header and format codes can be overridden using -k and -l options.
 
 Defaults:
 "Artist^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating"
-"%{artist}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}"
+"%{artist}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{popm}"
 
 Time to complete varies by processor and can take >10 minutes for large libraries. Check output 
 quality more quickly by testing on a subdirectory.
@@ -79,7 +79,7 @@ outpath="$HOME/.musiclib.dsv"
 showdisplay=1
 inclheader=1
 defheader="Artist^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating"
-exportcodes="%{artist}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{rating}"
+exportcodes="%{artist}^%{album}^%{albumartist}^%{title}^%{filepath}^%{genre}^%{seconds}000^%{popm}"
 sortcolumn=""
 
 # Use getops to set any user-assigned options
