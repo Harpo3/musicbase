@@ -75,7 +75,7 @@ fi
 # Set default variables
 kid3confpath=$"$HOME/.config/Kid3/Kid3.conf"
 dirdepth=1
-outpath="$HOME/.musiclib.dsv"
+outpath=$"$HOME/.musiclib.dsv"
 showdisplay=1
 inclheader=1
 defheader="Artist^Album^AlbumArtist^SongTitle^SongPath^Genre^SongLength^Rating"
