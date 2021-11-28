@@ -35,16 +35,16 @@ EOF
 
 kid3qtrunning(){
 # Determine whether kid3-qt is running, prompt user to close and continue processing
-local kidrunning="$(ps aux | grep "kid3-qt" | grep -v "grep")"
-if ! [ -z "$kidrunning" ]
+local kidrunning="$(pgrep "kid3-qt")"
+if [ -n "$kidrunning" ]
 then
     # prompt user to kill kid3-qt or exit program
     echo -n "Kid3-qt cannot be running for this utility to work. Close kid3-qt now ([Y]/n)?"
     read -r proceed
     if [ "$proceed" == "${proceed#[Yn]}" ] 
     then
-        local PID="$(pidof kid3-qt)"
-        kill -s HUP $PID
+        #local PID="$(pidof kid3-qt)"
+        kill -s HUP "$kidrunning"
     else
         printf 'Goodbye, then.\n'
         exit 0
@@ -136,7 +136,7 @@ else
 fi
 
 # Backup kid3-qt config-> $HOME/.config/Kid3/Kid3.conf to /tmp
-cp $HOME/.config/Kid3/Kid3.conf /tmp
+cp "$HOME/.config/Kid3/Kid3.conf" /tmp
 
 # Add musicbase export format to $HOME/.config/Kid3/Kid3.conf
 exportformatidx="$(grep -oP '(?<=ExportFormatIdx=)[0-9]+' "$kid3confpath")"
@@ -179,7 +179,12 @@ fi
 # while running the spinner to show operation
 while IFS= read -r line; do   
     kid3-cli -c "export /tmp/musiclib.dsv musicbase "$exportcodes"" "$line"
-    cat /tmp/musiclib.dsv >> "$outpath"
+    if [ $showdisplay = 0 ] 
+    then
+        cat /tmp/musiclib.dsv >> "$outpath"
+    else 
+        cat /tmp/musiclib.dsv | tee -a "$outpath"
+    fi
     if [ $showdisplay == 0 ] 
     then
         printf '' > /dev/null 2>&1
@@ -191,13 +196,13 @@ done < /tmp/albumdirs
 # Sort library order using file path column, preserving position of header, and replace library file
 # First, check whether a sort order is specified, then whether a header is specified.
 
-if [ ! -z "${sortcolumn}" ] 
+if [ -n "${sortcolumn}" ] 
 then
     if [ $inclheader == 1 ]
     then
-        (head -n 1 "$outpath" && tail -n +2 "$outpath"  | sort -k$sortcolumn -t '^') > /tmp/musiclib.dsv
+        (head -n 1 "$outpath" && tail -n +2 "$outpath"  | sort -k"$sortcolumn" -t '^') > /tmp/musiclib.dsv
     else # do not preserve header, not used
-        (tail -n +2 "$outpath"  | sort -k$sortcolumn -t '^') > /tmp/musiclib.dsv
+        (tail -n +2 "$outpath"  | sort -k"$sortcolumn" -t '^') > /tmp/musiclib.dsv
     fi
 else
     if [ $inclheader == 1 ]
@@ -216,6 +221,8 @@ else
 fi
 rm /tmp/musiclib.dsv
 # Replace $HOME/.config/Kid3/Kid3.conf with backed up tmp copy
-rm $HOME/.config/Kid3/Kid3.conf
-cp /tmp/Kid3.conf $HOME/.config/Kid3
+rm "$HOME/.config/Kid3/Kid3.conf"
+cp /tmp/Kid3.conf "$HOME/.config/Kid3"
 #EOF
+
+exportformatidx=$((exportformatidx+1))
