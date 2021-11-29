@@ -181,9 +181,9 @@ while IFS= read -r line; do
     kid3-cli -c "export /tmp/musiclib.dsv musicbase "$exportcodes"" "$line"
     if [ $showdisplay = 0 ] 
     then
-        cat /tmp/musiclib.dsv >> "$outpath"
+        /tmp/musiclib.dsv < >> "$outpath"
     else 
-        cat /tmp/musiclib.dsv | tee -a "$outpath"
+        tee -a "$outpath" < /tmp/musiclib.dsv
     fi
     if [ $showdisplay == 0 ] 
     then
