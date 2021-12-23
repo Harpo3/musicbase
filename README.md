@@ -1,6 +1,6 @@
 # Musicbase - A kid3-based music library database creation utility.
 
-Kid3-cli and kid3-qt based utility to build a complete music library database at once. 
+Kid3-common and kid3-qt based utility to build a complete music library database at once. 
 
 The script uses the kid3-qt configuration file ($HOME/.config/Kid3/Kid3.conf) to set default format codes to establish record values and applies the format using kid3-cli. Users can specify their own format codes and headers.
 
